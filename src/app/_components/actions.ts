@@ -4,7 +4,6 @@ import { BingoTile } from "@/types";
 import service from "@/utils/supabase";
 
 export async function toggleTile(tile_id: string, completed: boolean) {
-  let start = performance.now();
   const { data: value, error: valueError } = await service
     .from("config")
     .select("*")
@@ -13,8 +12,6 @@ export async function toggleTile(tile_id: string, completed: boolean) {
   if (valueError) throw new Error(`Error fetching value: ${valueError.message}`);
 
   const grid = value.options as BingoTile[];
-  console.log("get", performance.now() - start);
-  start = performance.now();
 
   const newValue = grid.map((tile) => {
     if (tile.id === tile_id) {
