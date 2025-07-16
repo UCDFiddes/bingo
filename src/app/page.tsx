@@ -1,5 +1,3 @@
-import { BingoTile } from "@/types";
-import cloudflare from "@/utils/cloudflare";
 import BingoGrid from "./_components/BingoGrid";
 import service from "@/utils/supabase";
 
