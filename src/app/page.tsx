@@ -1,6 +1,8 @@
 import BingoGrid from "./_components/BingoGrid";
 import service from "@/utils/supabase";
 
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
   const { data: value, error: valueError } = await service
     .from("config")
