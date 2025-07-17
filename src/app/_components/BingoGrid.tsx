@@ -1,24 +1,38 @@
 "use client";
 
-import { BingoTile } from "@/types";
-import cn from "@/utils/tailwind";
-import { toggleTile } from "./actions";
-import { useState } from "react";
+import { BingoTile as BingoTileType } from "@/types";
+import { useEffect, useState } from "react";
+import BingoTile from "./BingoTile";
+import client from "@/utils/supabase-client";
 
 interface ComponentProps {
-  initalGrid: BingoTile[];
+  initalGrid: BingoTileType[];
 }
 export default function BingoGrid({ initalGrid }: ComponentProps) {
   const [isEditMode, setIsEditMode] = useState(false);
-  const [grid, setGrid] = useState<BingoTile[]>(initalGrid);
-  const [loadingTile, setLoadingTile] = useState<string | null>(null);
+  const [grid, setGrid] = useState<BingoTileType[]>(initalGrid);
 
-  async function onTileClick(tile_id: string, completed: boolean) {
-    setLoadingTile(tile_id);
-    const result = await toggleTile(tile_id, completed);
-    setGrid(result);
-    setLoadingTile(null);
-  }
+  useEffect(() => {
+    const channel = client
+      .channel("bingo")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "config",
+          filter: "id=eq.BINGO",
+        },
+        (payload) => {
+          setGrid(payload.new.options as BingoTileType[]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      client.removeChannel(channel);
+    };
+  }, []);
 
   return (
     <div className="max-w-4xl mx-auto px-3 w-full">
@@ -43,22 +57,14 @@ export default function BingoGrid({ initalGrid }: ComponentProps) {
         {Array.from(new Array(25)).map((_, i) => {
           const tile = grid[i];
           return (
-            <button
-              onClick={() => onTileClick(tile.id, !tile.completed)}
+            <BingoTile
               key={tile.id}
-              className={cn(
-                "w-full aspect-square relative p-3 border border-zinc-700",
-                tile.completed ? "bg-green-600" : ""
-              )}
-              disabled={loadingTile === tile.id}
-            >
-              <div className={cn(loadingTile === tile.id ? "opacity-50" : "")}>
-                <p className="text-[clamp(10px,3vw,18px)] leading-tight">{tile.objective}</p>
-              </div>
-              {loadingTile === tile.id && (
-                <span className="absolute animate-spin size-10 border-6 top-1/2 left-1/2 rounded-full border-l-zinc-300 border-t-zinc-300 border-zinc-500 -translate-x-1/2 -translate-y-1/2" />
-              )}
-            </button>
+              objective={tile.objective}
+              completed={tile.completed}
+              id={tile.id}
+              isEditMode={isEditMode}
+              setGrid={setGrid}
+            />
           );
         })}
       </div>

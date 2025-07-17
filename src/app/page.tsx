@@ -1,5 +1,5 @@
 import BingoGrid from "./_components/BingoGrid";
-import service from "@/utils/supabase";
+import service from "@/utils/supabase-service";
 
 export const dynamic = "force-dynamic";
 

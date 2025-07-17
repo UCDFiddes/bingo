@@ -1,7 +1,7 @@
 "use server";
 
 import { BingoTile } from "@/types";
-import service from "@/utils/supabase";
+import service from "@/utils/supabase-service";
 
 export async function toggleTile(tile_id: string, completed: boolean) {
   const { data: value, error: valueError } = await service
@@ -16,6 +16,33 @@ export async function toggleTile(tile_id: string, completed: boolean) {
   const newValue = grid.map((tile) => {
     if (tile.id === tile_id) {
       return { ...tile, completed };
+    }
+    return tile;
+  });
+
+  const { data: result } = await service
+    .from("config")
+    .update({ options: newValue })
+    .eq("id", "BINGO")
+    .select("*")
+    .single();
+
+  return (result as any).options as BingoTile[];
+}
+
+export async function updateTile(tile_id: string, objective: string) {
+  const { data: value, error: valueError } = await service
+    .from("config")
+    .select("*")
+    .eq("id", "BINGO")
+    .single();
+  if (valueError) throw new Error(`Error fetching value: ${valueError.message}`);
+
+  const grid = value.options as BingoTile[];
+
+  const newValue = grid.map((tile) => {
+    if (tile.id === tile_id) {
+      return { ...tile, objective };
     }
     return tile;
   });

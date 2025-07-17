@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.51.0",
-    "cloudflare": "^4.4.1",
     "next": "15.4.1",
     "radix-ui": "^1.4.2",
     "react": "19.1.0",
