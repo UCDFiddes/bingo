@@ -22,37 +22,41 @@ export default function BingoGrid({ initalGrid }: ComponentProps) {
 
   return (
     <div className="max-w-4xl mx-auto px-3 w-full">
-      <div className="flex items-center justify-center mb-3 gap-3">
-        <div
-          className="px-3 py-1.5 rounded-lg bg-zinc-900"
-          onClick={() => setIsEditMode(!isEditMode)}
-        >
-          You are {isEditMode ? "Editing" : "Viewing"}
-        </div>
+      <div className="flex items-center justify-center mb-3 bg-zinc-900 w-fit mx-auto px-3 py-1.5 rounded-xl">
         <button
-          className="px-3 py-1.5 rounded-lg bg-zinc-700"
-          onClick={() => setIsEditMode(!isEditMode)}
+          className="px-3 py-1 rounded-lg disabled:bg-zinc-800 bg-transparent opacity-75 disabled:opacity-100"
+          disabled={!isEditMode}
+          onClick={() => setIsEditMode(false)}
         >
-          Go to {isEditMode ? "View" : "Edit"} Mode
+          View
+        </button>
+        <button
+          className="px-3 py-1 rounded-lg disabled:bg-zinc-800 bg-transparent opacity-75 disabled:opacity-100"
+          disabled={isEditMode}
+          onClick={() => setIsEditMode(true)}
+        >
+          Edit
         </button>
       </div>
-      <div className="grid grid-cols-5 gap-1.5">
-        {Array.from(new Array(25)).map((key, i) => {
+
+      <div className="grid grid-cols-5">
+        {Array.from(new Array(25)).map((_, i) => {
           const tile = grid[i];
           return (
             <button
               onClick={() => onTileClick(tile.id, !tile.completed)}
               key={tile.id}
               className={cn(
-                "w-full bg-white aspect-square rounded-xl relative p-1.5",
-                tile.completed ? "bg-green-600" : "bg-zinc-700",
-                "disabled:opacity-80"
+                "w-full aspect-square relative p-3 border border-zinc-700",
+                tile.completed ? "bg-green-600" : ""
               )}
               disabled={loadingTile === tile.id}
             >
-              <p className="text-[clamp(10px,3vw,18px)] leading-tight">{tile.objective}</p>
+              <div className={cn(loadingTile === tile.id ? "opacity-50" : "")}>
+                <p className="text-[clamp(10px,3vw,18px)] leading-tight">{tile.objective}</p>
+              </div>
               {loadingTile === tile.id && (
-                <span className="absolute animate-spin size-10 border-6 top-1/2 left-1/2 rounded-full border-l-zinc-600 border-t-zinc-600 border-zinc-800 -translate-x-1/2 -translate-y-1/2" />
+                <span className="absolute animate-spin size-10 border-6 top-1/2 left-1/2 rounded-full border-l-zinc-300 border-t-zinc-300 border-zinc-500 -translate-x-1/2 -translate-y-1/2" />
               )}
             </button>
           );
