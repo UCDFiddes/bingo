@@ -1,0 +1,1 @@
+A simple web application that shows a bingo grid, each tile can be labelled and ticked of by any user. Can be used for reason, made just to have more fun with events with friends. Made using Next.js for hosting on Vercel. Supabase is used for the database with a single table called `config` with an `id` (text) and `options` (json) column.
